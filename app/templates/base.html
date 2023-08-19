@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+
+  <!-- Style -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block styles %}{% end %}
+
+</head>
+
+<body style="background-image: url({{background_image_url}});">
+  <div class="container">
+    <img src="{{client_logo_url}}" alt="Company Logo" class="logo">
+    <h2 style="margin-top: 10px; margin-bottom: 10px;">{{client_display_name}}</h2>
+    <div id="page-title" class="title"></div>
+    <div class="main-content">
+      {% block content %}{% end %}
+    </div>
+  </div>
+
+  {% block scripts %}{% end %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var path = window.location.pathname;
+
+      var pageTitle;
+
+      switch (path) {
+        case "/login":
+          pageTitle = "Login";
+          break;
+        case "/forgot-password":
+          pageTitle = "Forgot Password";
+          break;
+        default:
+          pageTitle = "Not Found";
+          activeLinkId = null;
+      }
+
+      console.log("path:" + path)
+      console.log("pageTitle:" + pageTitle)
+
+      document.title = pageTitle;
+      var pageTitleElement = document.getElementById("page-title");
+      if (pageTitleElement) pageTitleElement.textContent = pageTitle;
+    });
+  </script>
+</body>
+
+</html>

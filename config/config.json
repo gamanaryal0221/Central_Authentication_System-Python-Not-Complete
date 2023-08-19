@@ -1,0 +1,22 @@
+{
+    "data_sources": {
+        "resource_manager": {
+            "hostname": "localhost",
+            "database": "resource_manager_dev",
+            "user": "rm",
+            "password": "rm"
+        }
+    },
+    "firebase": {
+        "db_url": "https://learn-tornado-default-rtdb.asia-southeast1.firebasedatabase.app"
+    },
+    "token": {
+        "private_key": "ImmGd3QjipXPDROyErt8OZGKCn5lEXS2u3kqf5zgbrvOTTvGrOTR2Lgx_Q6E5-QPZMNoYtLk25jtqOSWXx3M92J8kYjM4i-PEfh-OBZ77T1GKJQAyIBvrjDXrKUAq3LJClInJj883eksVO478x7cOjsBVUMeNiTJNW39F-O4EnHomTQqKJl3CYaqC6gD4FFJciBocU1mmfH_03uiq7hGCkM0Rtmzi3zPiLrpFvqOiN24ha5tYmxDNZ2WUyuIjzmK1tjqoVjPAw7q9dYj8_PHKluWpaRdemyGrwB6FURpj_dByNH13t49LLYHBF5O4sapvuC1UqiABQ0SQslfmloY7Ulu4Z1ipiTKZLrTZguYqfGZmGKaTxL3w5ck76ZZQk0-TG-c5gE7goFLceLVO0oJUps56OiNS6y3gT9Sb8H9cIwV7P-hGTReo11kChz15prNvcxxRg5srZzqJnIyLGaXsDqyFnYzSXrIDE38BYIVG-v1kD7uEVtjB_7bwbanOO8haZff9mpmEMe5ZQnveVFTDB1KlpGRUoUOlk9xLRdSzWfstycVTYHKaJcLk6XTr1WXn0eVjT0aV0NwoKzkrlrQICI3nmMHnynqgiQky-LgG7RAM6xI_4lx47axlgTaiKHcof8dLoeK0LFeZWHtrpUkayMaE2w6Q48IXV5jipUTrR5yY_-0FM2hq745IebpXk1Ds5Ebg-fUu1nR1Y0Un9mSLC1CztlbDl3cH07rcCv4q1YPiQmCyTvYwkWY69zBL_wsUVHOtXJzuWhgLCi6mlut3gZIM8bMYkgmlzsko6GeVCuSXDjItKw5mntRL6NqRt7yDR1vFU3yvdeqv-ZsFDwj1NTA7Zfy3HuV3ij_geGRTjxfYsnFaw_-H91myK89gAS_XF7TtZ_7QqkuWIjx4M4p5izWMZ-ywBUFgtyhlm3X7s2UCaeqXngLsXwY5C_u7zk4Z0hN_13LgrIP44sioCem0sbFZxfVYzBW-5cX56tNL9b10pXd7qDLYG_b06VqPhvPb_QEWxJ1_JXkhBI_31fceA29denC6m_ESHeAcBBVv8p2qhzl4K134qp-5W8hDFfJb2rEwxaNfovV0zmT9FZAF3WwbXSB_1LppQ3uVm2I2gPMrDmN39Fns56U3iJWhQiBioeo40g6ary65-iCNpmm1jefxA2X1ER1Bddo3hkaeCgbz-YlnK-xnab2ybW25l8o7b89Hf2Q1AEE9tStJJrkJqM9UsurNJQEmVlbnidaSIcpI6F7Z9hdxiUJ0r6Bkot0uZft0EJg4RtlRiMwR6R4gLF-o680ShTLkUn36aIyvt9BbdCr3dJXZUGJIBAKtUAEo4nT0KU45hdG4njjrzda8hq4i8Sz2LGQy6lQaE5yL44uIXyu5PAKqfLBnDSK4eCHj5W2YTbu9yIsM052PDQLJReGjymo3DfkYTl3oX5siqrdbK8weVmBPKyClhg0xKI8vlgdclgDan5T3lJDsg2WF1di_PVuspnWP94dB0s9MKAM-fWuredSObWrOm5NEBM8YXiXpnkVXD7lC1Zwq4xgSJ4LIu3pW_P6xC-zNW8hBIrt_CZiTOAsgaCuHUeLHLNqGPmXg1KKf7YVlK6tB-3Z1XcOHDLN-nw6JEA2qf_aRgX8Wwo0mEe6P7vtqt9--fldsGI9rhcUXOhAXxAztGcvFFpUS7FK-5xB1Tj2tNfy_dT1y_lp4UCi3EQhnqCwMEm--2DM6w3-xMjehjhRZMYCdlcnjQ02DyBD9Km7w6eEZWrGi6QwSsk51fvHb9K9igVugoAguPyKmC-KDvrfpr8Q3Hg6XuIMCTCC_upTm_lmTNRMY-1wGpgYPGbImnVDZ7k9E54yXTyH97ZMBSdQW5D9bm-32CXMF8KE2odhSDAcixyRGRzhPF2Qmv0u5hbAMomU8cGqVrXxg9zn9vPxcc5YfAdrWTGErX5Dwu4wSK6HTSBkvYmNU4b-m3t-UMcjWM8rkGhf72V9ZruWUvY8v3jRoJO_mdq-wsrjsa8rOtGfvxFi0vA5wiHMdq49ZvbeuWDg3RcwprcpQhmb6vZNXGAqVFBQLmQ5J0d2XaU7V7bjEX1tS1o8cODKtrH2Ga0pEXNjALd6ksuINdEYgtuaz2-ANQ",
+        "expire_duration": 60,
+        "algorithm": "HS256"
+    },
+    "cookie_secret": "b18681a513857c203aa9fa0e18bac8735142ecc4358dc761c2c3980aadf0a2e7468c5a7667fe7c913f1bbb8df948c78eefe73a291cb0bf40ce6009f89cd7192aa41d906a8d7ad0fd38cd1df31d2c0134ba141c4a2dc33216442de30fed413cea69cdbba75ba52f4a80fa0eb205961755d5ab305ef4d47ae7d4ff7f669f2900f86744e1eff71f03218e483d72dc0905f760e1364a42686e35840fadb098293919a24b6e262f3d66985b01b06e0a46786ed6baf4cd014abe26c8ad1b608514f07e0e4ae431b745981a695262292b229a3a3e46eec932fbdabc71773c142db470b31adef704f6ba3003d714bf1298d2b49aaa42320b5dca66631b66864cf1127e610da90e17d0f11507c7c29e3cfa23529d717ede4528ad3ed66156ee3cb98c1b6931954b9f5f964b0be8c8db5ecaf9337c32d2b78cbb4fd25fbe24a6f1ec009e7f",
+    "port": 8888,
+    "version": 1.0
+}
+  

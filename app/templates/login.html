@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<!-- Style -->
+<link rel="stylesheet" href="/static/css/login_style.css">
+{% end %}
+
+{% block content %}
+
+{% if is_google_authentication_enabled %}
+<button class="google-btn">
+  <img src="google-logo.png" alt="Google Logo"> Sign in with Google
+</button>
+{% end %}
+
+{% if is_google_authentication_enabled and is_credential_authentication_enabled %}
+<div class="or">-- or --</div>
+{% end %}
+
+{% if is_credential_authentication_enabled %}
+<div>
+  <div class="provide-credentials-text">
+    Please provide your credentials to login.
+  </div>
+
+  {% if error_msg %}
+  <div class="provide-credentials-text" style="color: red;">
+    {{ error_msg }}
+  </div>
+  {% end %}
+
+  <form action="/login?host_url={{host_url}}" method="post">
+    <div>
+      <div class="input-title">Email, Username, or Phone</div>
+      <input type="text" class="input-field" placeholder="Email, Username, or Phone" name="username" value="{{username}}" required>
+      <div class="input-title">Password</div>
+      <div class="password-field">
+        <input type="password" class="input-field" placeholder="Password" name="password" required>
+        <span class="password-icon" onclick="togglePasswordVisibility(this)">👁️</span>
+      </div>
+      <div class="forgot-password">
+        <a href="/forgot-password?host_url={{host_url}}">Forgot password?</a>
+      </div>
+    </div>
+    <button class="login-btn" type="submit">Login</button>
+  </form>
+
+</div>
+{% end %}
+
+
+{% end %}
+
+{% block scripts %}
+<script>
+  function togglePasswordVisibility(icon) {
+    var passwordField = icon.previousElementSibling;
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+    } else {
+      passwordField.type = "password";
+    }
+  }
+</script>
+{% end %}
