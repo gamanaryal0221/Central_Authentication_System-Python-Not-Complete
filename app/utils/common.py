@@ -1,3 +1,6 @@
+from urllib.parse import urlparse
+import traceback
+
 from app.utils.constants import Key, Template
 
 def render_error_page(self, status_code=504, title="Technical Error", message="Something went wrong\nPlease try again", redirect_url = None, redirect_text = None):
@@ -12,7 +15,15 @@ def render_error_page(self, status_code=504, title="Technical Error", message="S
     self.render(Template.ERROR, **error)
 
 def get_request_host(host_url):
-    request_host = str(host_url).replace("http://","").replace("https://","")
+    request_host = None
+    try:
+        # Parse the URL
+        parsed_url = urlparse(host_url)
+
+        # Extract the netloc, which contains the domain (i.e. request_host)
+        request_host = parsed_url.netloc
+    except:
+        traceback.print_exception()
     print(f"request_host:{request_host} from host_url:{host_url}")
     return request_host
 
@@ -38,3 +49,30 @@ def get_mapped_records(cursor, want_one_if_one=True):
             return records
     else:
         None
+
+def fetch_data(_from, key, default_value=None):
+    print(f"Reading '{key}' ...")
+    if key in _from:
+        return _from[key]
+    else:
+        if default_value:
+            print(f"Missing configuration for '{key}' -> Putting {default_value} as default value")
+            return default_value
+        else:
+            raise ImportError(f"Missing configuration for '{key}'")
+        
+
+def login_succes_redirect_to_application(_self, request_host, host_url, token):
+    print("\nRedirecting to application ...")
+
+    if request_host or host_url:
+        redirection_url = ("https://" if "https://" in host_url else "http://") if host_url else "https://"
+        
+        request_host = (request_host if request_host else get_request_host(host_url))
+        redirection_url = redirection_url + request_host
+
+        redirection_url = redirection_url + f"/login/success?host_url={host_url}&token={token}"
+        print(f"Redirecting to {redirection_url}")
+        _self.redirect(f"{redirection_url}")
+    else:
+        raise RuntimeError(f"Invalid [request_host:{request_host}, host_url:{host_url}]")

@@ -23,9 +23,9 @@
     Please provide your credentials to login.
   </div>
 
-  {% if error_msg %}
-  <div class="provide-credentials-text" style="color: red;">
-    {{ error_msg }}
+  {% if status_msg %}
+  <div class="provide-credentials-text" style="color: {{ status_msg_color }};">
+    {{ status_msg }}
   </div>
   {% end %}
 

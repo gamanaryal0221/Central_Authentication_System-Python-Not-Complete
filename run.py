@@ -2,7 +2,6 @@ import tornado.web
 import tornado.ioloop
 
 from config.application import Application
-from app import settings
 
 import os
 from app.utils.constants import Environment
@@ -19,14 +18,13 @@ if __name__ == "__main__":
 
     app = Application().initialize(environment)
 
-    if environment == Environment.DEVELOPMENT:
-        port  = settings.PORT
-        app.listen(port)
-
     # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-    # C:\Apache24\conf
+    # C:\Apache24\conf\httdp.conf
     # C:\Apache24\bin\httpd.exe
     # C:\Windows\System32\drivers\etc\hosts
     # /user/(?P<action>create|list|profile|edit|delete)
+    # netstat -ano | findstr :<port_number>
+    # taskkill /F /PID <process_pid>
+
     print(f"\nServer is live")
     tornado.ioloop.IOLoop.instance().start()

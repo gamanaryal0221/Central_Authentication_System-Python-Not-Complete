@@ -11,6 +11,8 @@ class Environment():
     PROD = "prod"
 
 class Key():
+    PORT = "port"
+
     HOST_URL = "host_url"
     REQUEST_HOST = "request_host"
 
@@ -51,15 +53,22 @@ class Key():
     GENDER = "gender"
     EMAIL = "email"
     NUMBER = "number"
-    EXPIRE_ON = "exp"
+    EXPIRE = "exp"
     
     TOKEN = "token"
+    SMTP = "smtp"
 
-    ERROR_MSG = "error_msg"
+    STATUS_MSG = "status_msg"
+    STATUS_MSG_COLOR = "status_msg_color"
+
+    TOKEN_PURPOSE = "token_purpose"
 
 
 class Config():
-    MYSQL_DATA_SOURCES = "data_sources"
+    # All the main keys mentioned in config file and will be further stored in application property will be listed here
+    MYSQL = "mysql"
+    TOKEN = "token"
+    SMTP = "smtp"
 
 
 class Mysql():
@@ -78,3 +87,19 @@ class Token():
 
     DEFAULT_EXPIRE_DURATION = 8
     DEFAULT_ALGORITHM = 'HS256'
+
+
+class SMTP():
+    SERVER = "server"
+    PORT = "port"
+    USERNAME = "username"
+    PASSWORD = "password"
+
+    SENDER_EMAIL = 'sender_email'
+
+class Default():
+    STATUS_MSG_COLOR = "red"
+
+
+class Url():
+    CAS_RESET_PASSWORD_URL = f"http://login.{Environment.KEY.upper()}.vcp.com/reset-password?token={Key.TOKEN.upper()}"

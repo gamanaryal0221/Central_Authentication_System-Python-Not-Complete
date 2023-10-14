@@ -1,16 +1,17 @@
 from .common import get_request_host, get_mapped_records
-from .constants import Key
+from .constants import Config, Key
+from .custom_exceptions import NotFoundInApplicationException
         
 
-def get_connection(self, data_source_key):
-    if data_source_key:
-        mysql_connections = self.application.mysql_connections
-        if data_source_key in mysql_connections:
-            return mysql_connections[data_source_key]
+def get_connection(_self, server):
+    if server:
+        mysql_connections = _self.application.config[Config.MYSQL]
+        if server in mysql_connections:
+            return mysql_connections[server]
         else:
-            raise RuntimeError(f"Could not find connection with '{data_source_key}'")
+            raise RuntimeError(f"Could not find connection with '{server}'")
     else:
-        raise ValueError("Null data source key received")
+        raise NotFoundInApplicationException(f" {server} in {Config.MYSQL}")
 
 
 def get_client_and_service_details_from_hosturl(conn, host_url):
@@ -35,12 +36,12 @@ def get_client_and_service_details_from_hosturl(conn, host_url):
     return client_service
 
 
-def get_user_detail(conn, username):
+def get_user_detail_by_email_username_or_number(conn, username, include_password_details = False):
     cursor = conn.cursor()
     cursor.execute(
-        f"select u.id as {Key.USER_ID}, ue.email as {Key.EMAIL}, un.number as {Key.NUMBER}, "+
-        f"u.first_name as {Key.FIRST_NAME}, u.middle_name as {Key.MIDDLE_NAME}, u.last_name as {Key.LAST_NAME}, "+
-        f"u.salt_value as {Key.SALT_VALUE}, u.password as {Key.HASHED_PASSWORD} "
+        f"select u.id as {Key.USER_ID}, ue.email as {Key.EMAIL}, un.number as {Key.NUMBER}, u.username as {Key.USERNAME}, "+
+        f"u.first_name as {Key.FIRST_NAME}, u.middle_name as {Key.MIDDLE_NAME}, u.last_name as {Key.LAST_NAME} "+
+        (f", u.salt_value as {Key.SALT_VALUE}, u.password as {Key.HASHED_PASSWORD} " if include_password_details else "") +
         "from user u "+
         "inner join user_email ue on ue.user_id=u.id "+
         "inner join user_number un on un.user_id=u.id "+
