@@ -50,6 +50,17 @@ def get_mapped_records(cursor, want_one_if_one=True):
     else:
         None
 
+def get_count_from_cursor(cursor):
+    all_data = cursor.fetchall()
+    if all_data:
+        first_record = all_data[0]
+        if first_record:
+            return first_record[0] if first_record[0] else 0
+        else:
+            return 0
+    else:
+        return 0
+
 def fetch_data(_from, key, default_value=None):
     print(f"Reading '{key}' ...")
     if key in _from:

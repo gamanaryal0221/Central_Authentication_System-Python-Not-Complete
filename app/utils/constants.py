@@ -2,13 +2,14 @@ class Template():
     LOGIN = "login.html"
     ERROR = "error.html"
     FORGOT_PASSWORD = "forgot_password.html"
+    RESET_PASSWORD = "reset_password.html"
 
 
 class Environment():
     KEY = "environment"
     DEVELOPMENT = "dev"
     QC = "qc"
-    PROD = "prod"
+    PRODUCTION = "prod"
 
 class Key():
     PORT = "port"
@@ -23,6 +24,9 @@ class Key():
     MESSAGE = "message"
     REDIRECT_URL = "redirect_url"
     REDIRECT_TEXT = "redirect_text"
+
+    IS_VALIDATED = "is_validated"
+    PAYLOAD = "payload"
 
     CLIENT_ID = "client_id"
     CLIENT_NAME = "client_name"
@@ -41,6 +45,7 @@ class Key():
 
     USERNAME = "username"
     PASSWORD = "password"
+    CONFIRM_PASSWORD = "confirm_password"
     
     SALT_VALUE = "salt_value"
     HASHED_PASSWORD = "hashed_password"
@@ -62,6 +67,8 @@ class Key():
     STATUS_MSG_COLOR = "status_msg_color"
 
     TOKEN_PURPOSE = "token_purpose"
+    CURRENT_COUNT_OF_PASSWORD_RESET_REQUEST_USING_TOKEN = "current_count_of_password_reset_request_using_token"
+    IS_FORBIDDEN = "is_forbidden"
 
 
 class Config():
@@ -99,6 +106,7 @@ class SMTP():
 
 class Default():
     STATUS_MSG_COLOR = "red"
+    COMPANY_NAME = "Virtual Corp"
 
 
 class Url():

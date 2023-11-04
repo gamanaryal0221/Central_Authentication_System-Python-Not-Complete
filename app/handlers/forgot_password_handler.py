@@ -4,7 +4,7 @@ import tornado.ioloop
 
 from app.utils.constants import Template, Key, Mysql, Default, Environment, Url
 from app.utils.common import render_error_page
-from app.utils.db_utils import get_connection, get_client_and_service_details_from_hosturl, get_user_detail_by_email_username_or_number
+from app.utils.db_utils import get_connection, get_client_and_service_details_from_hosturl_or_request_host, get_user_detail_by_email_username_or_number
 from app.utils.authentication_authorization import Access
 from app.utils.token import JwtToken
 from app.utils.email_sender import Email
@@ -17,7 +17,7 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
 
         if host_url is not None:
             connection = get_connection(self, Mysql.RESOURCE_MANAGER)
-            client_service = get_client_and_service_details_from_hosturl(connection, host_url)
+            client_service = get_client_and_service_details_from_hosturl_or_request_host(connection, host_url, None)
 
             if client_service is not None and client_service.get(Key.CLIENT_ID) and client_service.get(Key.SERVICE_ID):
                 self.request.client_service =client_service
@@ -67,9 +67,10 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
 
                         try:
                             # Sent the password reset mail to the user
-                            if is_reset_password_email_sent(self, user):
-                                response[Key.STATUS_MSG] = "Password reset email has been successfully sent to your respective email address."
+                            if is_reset_password_email_sent(self, connection, user, host_url):
+                                response[Key.STATUS_MSG] = f"Password reset email has been successfully sent to your respective email address of '{response[Key.USERNAME]}'"
                                 response[Key.STATUS_MSG_COLOR] = "green"
+                                response[Key.USERNAME] = ""
                                 self.render(Template.FORGOT_PASSWORD,**response)
                             else:
                                 response[Key.STATUS_MSG] = "Something went wrong. Please try again later"
@@ -94,11 +95,11 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
             self.render(Template.FORGOT_PASSWORD, **response)
 
 
-def is_reset_password_email_sent(_self, user):
+def is_reset_password_email_sent(_self, connection, user, host_url):
     email_address = user[Key.EMAIL]
     if email_address:
         try:
-            password_reset_token = JwtToken(_self, JwtToken.Purpose.RESET_PASSWORD).generate(user, None, None)
+            password_reset_token = JwtToken(_self, JwtToken.Purpose.RESET_PASSWORD).generate(user, None, host_url, connection)
             cas_reset_password_url = get_cas_reset_password_url(_self, password_reset_token)
             content = get_reset_password_email_content(user[Key.USERNAME], cas_reset_password_url)
             return Email(_self).send(email_address, "Reset Password", content, None)
@@ -112,7 +113,7 @@ def is_reset_password_email_sent(_self, user):
 
 def get_cas_reset_password_url(_self, password_reset_token):
     environment = _self.application.config[Environment.KEY]
-    if environment == Environment.PROD: environment = ""
+    if environment == Environment.PRODUCTION: environment = ""
 
     cas_reset_password_url = Url.CAS_RESET_PASSWORD_URL.replace(Environment.KEY.upper(),environment).replace(Key.TOKEN.upper(),password_reset_token).rstrip("/")
     print(f"cas_reset_password_url:{cas_reset_password_url}")

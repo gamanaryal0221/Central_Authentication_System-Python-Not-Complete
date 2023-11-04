@@ -14,6 +14,7 @@ if __name__ == "__main__":
     print(f"{Environment.KEY} = {environment}")
     if environment is None: raise ImportError("Environment is not defined")
     environment = environment.lower()
+    if environment not in [Environment.DEVELOPMENT, Environment.QC, Environment.PRODUCTION]: raise ImportError("Invalid environment name")
     print(f"{Environment.KEY} = {environment}")
 
     app = Application().initialize(environment)

@@ -4,7 +4,7 @@ import tornado.ioloop
 
 from app.utils.constants import Template, Key, Mysql, Default
 from app.utils.common import render_error_page, login_succes_redirect_to_application
-from app.utils.db_utils import get_connection, get_client_and_service_details_from_hosturl, get_user_detail_by_email_username_or_number
+from app.utils.db_utils import get_connection, get_client_and_service_details_from_hosturl_or_request_host, get_user_detail_by_email_username_or_number
 from app.utils.authentication_authorization import Password, Access
 from app.utils.token import JwtToken
 
@@ -16,7 +16,7 @@ class LoginHandler(tornado.web.RequestHandler):
 
         if host_url is not None:
             connection = get_connection(self, Mysql.RESOURCE_MANAGER)
-            client_service = get_client_and_service_details_from_hosturl(connection, host_url)
+            client_service = get_client_and_service_details_from_hosturl_or_request_host(connection, host_url, None)
 
             if client_service is not None and client_service.get(Key.CLIENT_ID) and client_service.get(Key.SERVICE_ID):
                 self.request.client_service =client_service
@@ -61,7 +61,7 @@ class LoginHandler(tornado.web.RequestHandler):
                 user = get_user_detail_by_email_username_or_number(connection, username, True)
                 
                 if user:
-                    if Password.is_valid(user, password):
+                    if Password(password).is_correct(user):
                         print(f"Credentials verified for user[id:{user[Key.USER_ID]}]")
                         client_service = self.request.client_service
 

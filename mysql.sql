@@ -83,7 +83,7 @@ create table
         `middle_name` varchar(255) null,
         `last_name` varchar(255) not null,
         `gender` int not null,
-        `salt_value` varchar(255) not null,
+        `salt_value` varchar(25) not null,
         `password` varchar(500) not null
     );
 
@@ -126,6 +126,18 @@ values ((select id from user where username="gaman0221"), "gaman.aryal@gmail.com
 insert into user_client_service(user_id, client_service_id)
 values ((select id from user where username="gaman0221"), (select id from client_service where request_host="admin.rm.dev.vcp.com"));
 
+
+create table
+    `resource_manager_dev`.`user_password_history` (
+        `id` bigint not null auto_increment primary key,
+        `user_id` bigint not null,
+        `salt_value`  varchar(25) not null,
+        `password` varchar(255) not null,
+        `is_reset_using_token` boolean not null default false,
+        `changed_at` timestamp not null default current_timestamp,
+        
+        foreign key (user_id) references `resource_manager_dev`.`user` (id)
+    );
 
 
 
