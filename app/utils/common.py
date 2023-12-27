@@ -14,41 +14,39 @@ def render_error_page(self, status_code=504, title="Technical Error", message="S
 
     self.render(Template.ERROR, **error)
 
-def get_request_host(host_url):
+def get_splitted_url(host_url):
     request_host = None
     try:
-        # Parse the URL
         parsed_url = urlparse(host_url)
-
-        # Extract the netloc, which contains the domain (i.e. request_host)
-        request_host = parsed_url.netloc
-    except:
-        traceback.print_exception()
+        return {Key.REQUEST_HOST: parsed_url.hostname, Key.FULL_REQUEST_HOST: parsed_url.netloc}
+    except Exception as e:
+        traceback.print_exception(e)
     print(f"request_host:{request_host} from host_url:{host_url}")
     return request_host
 
+def get_mapped_record(cursor):
+    return get_mapped_records(cursor, False)
 
-def get_mapped_records(cursor, want_one_if_one=True):
+def get_mapped_records(cursor, return_in_list=True):
     if cursor.rowcount > 0:
         all_data = cursor.fetchall()
-        # print(f"all_data:{all_data}")
 
         records = []
         columns = [column[0] for column in cursor.description]
-        # print(f"columns:{columns}")
 
         for data in all_data:
-            # print(f"data:{data}")
             record = dict(zip(columns, data))
-            # print(f"record:{record}")
             records.append(record)
 
-        if len(records)==1 and want_one_if_one:
-            return records[0]
+        if len(records)==1:
+            if return_in_list:
+                return records
+            else:
+                return records[0]
         else:
             return records
     else:
-        None
+        []
 
 def get_count_from_cursor(cursor):
     all_data = cursor.fetchall()
@@ -67,23 +65,7 @@ def fetch_data(_from, key, default_value=None):
         return _from[key]
     else:
         if default_value:
-            print(f"Missing configuration for '{key}' -> Putting {default_value} as default value")
+            print(f"Missing value for '{key}' -> Putting {default_value} as default value")
             return default_value
         else:
-            raise ImportError(f"Missing configuration for '{key}'")
-        
-
-def login_succes_redirect_to_application(_self, request_host, host_url, token):
-    print("\nRedirecting to application ...")
-
-    if request_host or host_url:
-        redirection_url = ("https://" if "https://" in host_url else "http://") if host_url else "https://"
-        
-        request_host = (request_host if request_host else get_request_host(host_url))
-        redirection_url = redirection_url + request_host
-
-        redirection_url = redirection_url + f"/login/success?host_url={host_url}&token={token}"
-        print(f"Redirecting to {redirection_url}")
-        _self.redirect(f"{redirection_url}")
-    else:
-        raise RuntimeError(f"Invalid [request_host:{request_host}, host_url:{host_url}]")
+            raise Exception(f"Missing configuration for '{key}'")

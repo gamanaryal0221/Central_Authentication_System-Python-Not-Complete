@@ -23,26 +23,22 @@
     Please provide your credentials to login.
   </div>
 
-  {% if status_msg %}
-  <div class="provide-credentials-text" style="color: {{ status_msg_color }};">
-    {{ status_msg }}
-  </div>
-  {% end %}
+  <div id="message" style="display: none; color: red;"></div><br><br>
 
-  <form action="/login?host_url={{host_url}}" method="post">
+  <form id="loginForm" method="post">
     <div>
       <div class="input-title">Email, Username, or Phone</div>
-      <input type="text" class="input-field" placeholder="Email, Username, or Phone" name="username" value="{{username}}" required>
+      <input type="text" class="input-field" placeholder="Email, Username, or Phone" id="username" name="username" required>
       <div class="input-title">Password</div>
       <div class="password-field">
-        <input type="password" class="input-field" placeholder="Password" name="password" required>
+        <input type="password" class="input-field" placeholder="Password" id="password" name="password" required>
         <span class="password-icon" onclick="togglePasswordVisibility(this)">👁️</span>
       </div>
       <div class="forgot-password">
-        <a href="/forgot-password?host_url={{host_url}}">Forgot password?</a>
+        <a href="/forgot-password?host_url={{host_url}}  ">Forgot password?</a>
       </div>
     </div>
-    <button class="login-btn" type="submit">Login</button>
+    <button class="login-btn" type="button" onclick="submitForm()">Login</button>
   </form>
 
 </div>
@@ -53,6 +49,9 @@
 
 {% block scripts %}
 <script>
+
+  const OK = "ok";
+
   function togglePasswordVisibility(icon) {
     var passwordField = icon.previousElementSibling;
     if (passwordField.type === "password") {
@@ -61,5 +60,66 @@
       passwordField.type = "password";
     }
   }
+
+      // JavaScript code for displaying messages in the message div
+  function showMessage(message, isGreen=false) {
+    const messageDiv = document.getElementById("message");
+    messageDiv.textContent = message;
+    messageDiv.style.display = "block";
+    if (isGreen){
+        messageDiv.style.color = "green"
+    }else{
+        messageDiv.style.color = "red"
+    }
+  }
+
+
+  // Submit form event handler
+  function submitForm() {
+    showMessage("");
+    
+    // Show loading overlay
+    showLoading();
+
+    var plusUrl = getUrlDetails().plusUrl
+    if (!plusUrl){
+      hideLoading();
+      showMessage("Could not proceed to login.");
+      return;
+    }
+
+    const formData = {
+      username: $("#username").val().trim(),
+      password: $("#password").val().trim()
+    };
+
+    $.ajax({
+        type: "POST",
+        url: plusUrl,
+        data: JSON.stringify(formData),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            if (response){
+                if (response.message==OK) {
+                    console.log("ok")
+                } else {
+                    showMessage(response.message)
+                }
+            }else{
+                showMessage("Something went wrong Please try again")
+            }
+
+            hideLoading();
+        },
+        error: function(error) {
+            console.error("Error:", error);
+
+            hideLoading();
+            showMessage("Something went wrong Please try again")
+        }
+    });
+  }
+
 </script>
 {% end %}

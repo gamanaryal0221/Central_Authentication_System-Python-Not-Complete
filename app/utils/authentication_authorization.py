@@ -1,10 +1,10 @@
-from .constants import Key
-from app import settings
-
 import random
 import string
 import hashlib
 import re
+
+from .constants import Key
+from .common import get_count_from_cursor
 
 
 class Password():
@@ -96,12 +96,15 @@ class Password():
 
 class Access():
     def is_valid_for_respective_client_service(conn, user, client_service):
-        print(f"Validating access of user[id:{user[Key.USER_ID]}] on request_host:{client_service[Key.REQUEST_HOST]}")
+        print(f"Validating access of user[id:{user[Key.USER_ID]}] on client_service[id:{client_service[Key.CLIENT_SERVICE_ID]}] ...")
         cursor = conn.cursor()
         cursor.execute(
-            f"select * from user_client_service ucs "+
+            f"select count(*) from user_client_service ucs "+
             "where ucs.user_id = %s and ucs.client_service_id = %s ",
             [user[Key.USER_ID], client_service[Key.CLIENT_SERVICE_ID]]
         )
 
-        return (cursor.rowcount > 0)
+        count = get_count_from_cursor(cursor)
+        cursor.close()
+
+        return (count > 0)

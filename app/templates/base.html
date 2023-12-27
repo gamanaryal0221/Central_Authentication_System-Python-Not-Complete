@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Form</title>
 
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
   <!-- Style -->
   <link rel="stylesheet" href="/static/css/style.css">
   {% block styles %}{% end %}
@@ -14,6 +17,10 @@
 
 <body style="background-image: url({{background_image_url}});">
   <div class="container">
+    <!-- Overlay for loading indicator -->
+  <div id="overlay">
+    <div id="loading-message">Please wait...</div>
+  </div>
     <img src="{{client_logo_url}}" alt="Company Logo" class="logo">
     <h2 style="margin-top: 10px; margin-bottom: 10px;">{{client_display_name}}</h2>
     <div id="page-title" class="title"></div>
@@ -24,7 +31,19 @@
 
   {% block scripts %}{% end %}
   <script>
+
+  function getUrlDetails(){
+    var currentUrl = window.location.href;
+    var parser = document.createElement('a');
+    parser.href = currentUrl;
+    var plusUrl = parser.pathname + parser.search;
+    var baseUrl = parser.protocol + '//' + parser.host;
+
+    return {currentUrl:currentUrl, pathname:parser.pathname, search:parser.search, plusUrl:plusUrl, baseUrl:baseUrl}
+  }
+
     document.addEventListener("DOMContentLoaded", function () {
+      $("#overlay").hide();
       var path = window.location.pathname;
 
       var pageTitle;
@@ -51,6 +70,18 @@
       var pageTitleElement = document.getElementById("page-title");
       if (pageTitleElement) pageTitleElement.textContent = pageTitle;
     });
+  
+      
+    // Function to show loading overlay
+    function showLoading() {
+        $("#overlay").show();
+    }
+
+    // Function to hide loading overlay
+    function hideLoading() {
+        $("#overlay").hide();
+    }
+  
   </script>
 </body>
 

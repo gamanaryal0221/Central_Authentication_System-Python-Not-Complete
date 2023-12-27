@@ -48,34 +48,39 @@ class Configurations():
         print(f"\nCollecting mysql server details ----------")
         mysql_servers = self._fetch_data(self.config_file, Config.MYSQL)
         if mysql_servers:
-            connections = {}
-            connections[Mysql.RESOURCE_MANAGER] = self._establish_mysql_connection(Mysql.RESOURCE_MANAGER, mysql_servers)
+            mysql_server = {}
+            mysql_server[Mysql.USER_MANAGEMENT] = self._collect_mysql_data_and_test_connection(Mysql.USER_MANAGEMENT, mysql_servers)
 
-            return connections
+            return mysql_server
         else:
             raise NothingFoundInConfigException(Config.MYSQL)
 
         
-    def _establish_mysql_connection(self, server_key, mysql_servers):
+    def _collect_mysql_data_and_test_connection(self, server_key, mysql_servers):
         mysql_server = self._fetch_data(mysql_servers, server_key)
-        if mysql_server:        
+        if mysql_server:
+
+            host = self._fetch_data(mysql_server, Mysql.HOSTNAME)
+            db = self._fetch_data(mysql_server, Mysql.DATABASE)
+            user = self._fetch_data(mysql_server, Mysql.USER)
+            password = self._fetch_data(mysql_server, Mysql.PASSWORD)
+
             print(f'Connecting with \'{server_key}\' ...')
             connection = None
-
             try:
-                connection = pymysql.connect(
-                    host=mysql_server[Mysql.HOSTNAME],
-                    database=mysql_server[Mysql.DATABASE],
-                    user=mysql_server[Mysql.USER],
-                    password=mysql_server[Mysql.PASSWORD],
-                    autocommit=True
-                )
+                connection = pymysql.connect(host=host, database=db, user=user, password=password)
             except Exception as e:
                 print(e)
 
             if connection:
                 print(f"Successfully connected with '{server_key}'")
-                return connection
+                connection.close()
+                return {
+                    Mysql.HOSTNAME: host,
+                    Mysql.DATABASE: db,
+                    Mysql.USER: user,
+                    Mysql.PASSWORD: password
+                }
             else:
                 raise ConnectionError(f"Could not connect with '{server_key}'")
             

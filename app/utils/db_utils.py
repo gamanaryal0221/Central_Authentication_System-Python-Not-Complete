@@ -1,21 +1,45 @@
-from .common import get_request_host, get_mapped_records, get_count_from_cursor
-from .constants import Config, Key
+import pymysql
+
+import traceback
+
+from .common import get_splitted_url, get_mapped_record, get_mapped_records, get_count_from_cursor, fetch_data
+from .constants import Config, Key, Mysql
 from .custom_exceptions import NotFoundInApplicationException
         
 
-def get_connection(_self, server):
-    if server:
-        mysql_connections = _self.application.config[Config.MYSQL]
-        if server in mysql_connections:
-            return mysql_connections[server]
+def get_connection(_self, server_key):
+    if server_key:
+        print(f"\nEstablishing new connection with {server_key}")
+        mysql_servers = _self.application.config[Config.MYSQL]
+        if server_key in mysql_servers:
+            mysql_server = fetch_data(mysql_servers, server_key)
+
+            connection = None
+
+            try:
+                connection = pymysql.connect(
+                    host = fetch_data(mysql_server, Mysql.HOSTNAME),
+                    database = fetch_data(mysql_server, Mysql.DATABASE),
+                    user = fetch_data(mysql_server, Mysql.USER),
+                    password = fetch_data(mysql_server, Mysql.PASSWORD)
+                )
+            except Exception as e:
+                print(e)
+
+            if connection:
+                print(f"Successfully connected with '{server_key}'")
+                return connection
+            else:
+                raise ConnectionError(f"Could not connect with '{server_key}'")
+            
         else:
-            raise RuntimeError(f"Could not find connection with '{server}'")
+            raise RuntimeError(f"Could not find connection detail[server:'{server_key}']")
     else:
-        raise NotFoundInApplicationException(f" {server} in {Config.MYSQL}")
+        raise NotFoundInApplicationException(f" {server_key} in {Config.MYSQL}")
 
 
-def get_client_and_service_details_from_hosturl_or_request_host(conn, host_url, request_host):
-    request_host = request_host if request_host else get_request_host(host_url)
+def get_client_service_detail(conn, host_url, request_host):
+    request_host = request_host if request_host else get_splitted_url(host_url)[Key.REQUEST_HOST]
     if not request_host or request_host is None: return None
 
     try:
@@ -32,11 +56,12 @@ def get_client_and_service_details_from_hosturl_or_request_host(conn, host_url, 
             "and cs.request_host = %s ",
             [request_host]
         )
-        client_service = get_mapped_records(cursor)
+        client_service = get_mapped_record(cursor)
         print(f"client_service:{client_service}")
         return client_service
     except Exception as e:
-        print(f"Error encountered while fetching client ans service details from hosturl or request host: {e}")
+        print(f"Error encountered while fetching client_service details from hosturl:{host_url} or request host:{request_host}")
+        traceback.print_exception(e)
         return None
 
 
@@ -62,7 +87,7 @@ def _get_user_detail(conn, user_id, username, include_password_details = False):
             plus_sql, 
             params
         )
-        user = get_mapped_records(cursor)
+        user = get_mapped_record(cursor)
         print(f"user:{user}")
         return user
     except Exception as e:

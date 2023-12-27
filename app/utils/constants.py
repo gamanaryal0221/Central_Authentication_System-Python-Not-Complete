@@ -16,6 +16,7 @@ class Key():
 
     HOST_URL = "host_url"
     REQUEST_HOST = "request_host"
+    FULL_REQUEST_HOST = "full_request_host"
 
     SECRET_COOKIE_KEY = "cookie_secret"
 
@@ -70,6 +71,8 @@ class Key():
     CURRENT_COUNT_OF_PASSWORD_RESET_REQUEST_USING_TOKEN = "current_count_of_password_reset_request_using_token"
     IS_FORBIDDEN = "is_forbidden"
 
+    OK = "ok"
+
 
 class Config():
     # All the main keys mentioned in config file and will be further stored in application property will be listed here
@@ -79,7 +82,7 @@ class Config():
 
 
 class Mysql():
-    RESOURCE_MANAGER = "resource_manager"
+    USER_MANAGEMENT = "user_management"
 
     HOSTNAME = "hostname"
     DATABASE = "database"

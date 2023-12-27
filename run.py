@@ -19,13 +19,5 @@ if __name__ == "__main__":
 
     app = Application().initialize(environment)
 
-    # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-    # C:\Apache24\conf\httdp.conf
-    # C:\Apache24\bin\httpd.exe
-    # C:\Windows\System32\drivers\etc\hosts
-    # /user/(?P<action>create|list|profile|edit|delete)
-    # netstat -ano | findstr :<port_number>
-    # taskkill /F /PID <process_pid>
-
     print(f"\nServer is live")
     tornado.ioloop.IOLoop.instance().start()

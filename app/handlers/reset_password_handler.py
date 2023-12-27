@@ -71,7 +71,7 @@ class ResetPasswordHandler(tornado.web.RequestHandler):
                 user_id = required[Key.USER_ID]
 
                 try:
-                    connection = get_connection(self, Mysql.RESOURCE_MANAGER)
+                    connection = get_connection(self, Mysql.USER_MANAGEMENT)
 
                     previous_count_of_password_changed_using_token = get_count_of_password_reset_using_token(connection, user_id)
                     if previous_count_of_password_changed_using_token < required[Key.CURRENT_COUNT_OF_PASSWORD_RESET_REQUEST_USING_TOKEN]:

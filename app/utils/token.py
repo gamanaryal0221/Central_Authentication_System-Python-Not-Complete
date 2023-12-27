@@ -5,7 +5,7 @@ from enum import Enum
 from .constants import Config, Key, Token
 
 from .custom_exceptions import NotFoundInApplicationException
-from .common import get_request_host
+from .common import get_splitted_url
 from .db_utils import get_count_of_password_reset_using_token
 
 class JwtToken():
@@ -56,6 +56,7 @@ class JwtToken():
             if client_service:
                 payload[Key.CLIENT_ID] = client_service[Key.CLIENT_ID]
                 payload[Key.CLIENT_NAME] = client_service[Key.CLIENT_NAME]
+                payload[Key.CLIENT_DISPLAY_NAME] = client_service[Key.CLIENT_DISPLAY_NAME]
                 payload[Key.SERVICE_ID] = client_service[Key.SERVICE_ID]
                 payload[Key.SERVICE_NAME] = client_service[Key.SERVICE_NAME]
                 payload[Key.SERVICE_DISPLAY_NAME] = client_service[Key.SERVICE_DISPLAY_NAME]
@@ -64,7 +65,7 @@ class JwtToken():
             if host_url:
                 payload[Key.HOST_URL] = host_url
                 if Key.REQUEST_HOST not in payload:
-                    payload[Key.REQUEST_HOST] = get_request_host(host_url)
+                    payload[Key.REQUEST_HOST] = get_splitted_url(host_url)[Key.REQUEST_HOST]
 
         try:
             private_key = self.token_config[Token.PRIVATE_KEY]
@@ -74,7 +75,7 @@ class JwtToken():
             raise RuntimeError(f"Error encountered while generating token {_print}")
         
         if token:
-            print(f"Token {_print}:{token}")
+            print(f"Successfully generated token {_print}:{token}")
             return token
         else:
             raise RuntimeError(f"Could not generate token {_print}")

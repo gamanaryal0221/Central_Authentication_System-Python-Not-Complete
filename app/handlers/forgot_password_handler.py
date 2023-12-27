@@ -2,9 +2,11 @@ from typing import Awaitable
 import tornado.web
 import tornado.ioloop
 
+import json
+
 from app.utils.constants import Template, Key, Mysql, Default, Environment, Url
 from app.utils.common import render_error_page
-from app.utils.db_utils import get_connection, get_client_and_service_details_from_hosturl_or_request_host, get_user_detail_by_email_username_or_number
+from app.utils.db_utils import get_connection, get_client_service_detail, get_user_detail_by_email_username_or_number
 from app.utils.authentication_authorization import Access
 from app.utils.token import JwtToken
 from app.utils.email_sender import Email
@@ -16,22 +18,25 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
         print(f"host_url:{host_url}")
 
         if host_url is not None:
-            connection = get_connection(self, Mysql.RESOURCE_MANAGER)
-            client_service = get_client_and_service_details_from_hosturl_or_request_host(connection, host_url, None)
+            connection = get_connection(self, Mysql.USER_MANAGEMENT)
+            client_service = get_client_service_detail(connection, host_url, None)
 
             if client_service is not None and client_service.get(Key.CLIENT_ID) and client_service.get(Key.SERVICE_ID):
+                client_service[Key.HOST_URL] = host_url
                 self.request.client_service =client_service
-                self.request.response = {
-                    Key.STATUS_MSG: None,
-                    Key.STATUS_MSG_COLOR: Default.STATUS_MSG_COLOR,
-                    Key.USERNAME: "",
-                    Key.HOST_URL: host_url,
-                    Key.CLIENT_DISPLAY_NAME: client_service[Key.CLIENT_DISPLAY_NAME],
-                    Key.IS_GOOGLE_AUTHENTICATION_ENABLED: client_service[Key.IS_GOOGLE_AUTHENTICATION_ENABLED],
-                    Key.IS_CREDENTIAL_AUTHENTICATION_ENABLED: client_service[Key.IS_CREDENTIAL_AUTHENTICATION_ENABLED],
-                    Key.CLIENT_LOGO_URL: "https://www.freelogoservices.com/blog/wp-content/uploads/transparent-logo.jpg",
-                    Key.BACKGROUND_IMAGE_URL: "https://file.ejatlas.org/img/Conflict/4211/thumb_sagarmatha-national-park-2.jpg"
-                }
+
+                if self.request.method == "GET":
+                    self.request.response = {
+                        Key.STATUS_MSG: None,
+                        Key.STATUS_MSG_COLOR: Default.STATUS_MSG_COLOR,
+                        Key.USERNAME: "",
+                        Key.HOST_URL: host_url,
+                        Key.CLIENT_DISPLAY_NAME: client_service[Key.CLIENT_DISPLAY_NAME],
+                        Key.IS_GOOGLE_AUTHENTICATION_ENABLED: client_service[Key.IS_GOOGLE_AUTHENTICATION_ENABLED],
+                        Key.IS_CREDENTIAL_AUTHENTICATION_ENABLED: client_service[Key.IS_CREDENTIAL_AUTHENTICATION_ENABLED],
+                        Key.CLIENT_LOGO_URL: "https://www.freelogoservices.com/blog/wp-content/uploads/transparent-logo.jpg",
+                        Key.BACKGROUND_IMAGE_URL: "https://file.ejatlas.org/img/Conflict/4211/thumb_sagarmatha-national-park-2.jpg"
+                    }
             else:
                 render_error_page(self, status_code=400, title="Bad Request", message="Malformed URL")
         else:
@@ -58,7 +63,7 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
             redirect_url = f"/forgot-password?host_url={host_url}"
 
             try:
-                connection = get_connection(self, Mysql.RESOURCE_MANAGER)
+                connection = get_connection(self, Mysql.USER_MANAGEMENT)
                 user = get_user_detail_by_email_username_or_number(connection, username)
                 
                 if user:
@@ -93,6 +98,51 @@ class ForgotPasswordHandler(tornado.web.RequestHandler):
         else:
             response[Key.STATUS_MSG] = "Email or Username is mandatory"
             self.render(Template.FORGOT_PASSWORD, **response)
+
+
+        print(f"\nForgot password - POST")
+        connection = None
+        try:
+            data = json.loads(self.request.body.decode('utf-8'))
+            print(data)
+
+            username = data.get(Key.USERNAME)
+
+            if not username:
+                self.finish({Key.MESSAGE:"Email, Username, or Phone is mandatory"})
+                return
+
+            connection = get_connection(self, Mysql.USER_MANAGEMENT)
+            user = get_user_detail_by_email_username_or_number(connection, username, True)
+            print(f"User[id:{user[Key.USER_ID]}, username:{user[Key.USERNAME]}]")
+            
+            if not user:
+                self.finish({Key.MESSAGE:"Please provide your correct email, username, or phone to proceed."})
+                return
+
+            if not Access.is_valid_for_respective_client_service(connection, user, self.request.client_service):
+                self.finish({Key.MESSAGE:"Sorry, We can not allow you to reset your password."})
+                return
+
+            client_service = self.request.client_service
+            host_url = client_service[Key.HOST_URL]
+            print(f"Access verified for user[id:{user[Key.USER_ID]}] on host_url:{host_url}")
+
+            if is_reset_password_email_sent(self, connection, user, host_url):
+                self.finish({Key.MESSAGE:Key.OK})
+                return
+            else:
+                self.finish({Key.MESSAGE:"Something went wrong Please try again"})
+                return
+
+        except Exception as e:
+            print(f"Error encountered while verifying credentials: {e} ")
+            self.finish({Key.MESSAGE:"Something went wrong Please try again"})
+            return
+        
+        finally:
+            if connection:
+                connection.close()
 
 
 def is_reset_password_email_sent(_self, connection, user, host_url):
